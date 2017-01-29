@@ -1,0 +1,61 @@
+Developing Data Products  Presentation
+========================================================
+author: Agape
+date: 28.01.2017
+font-family: 'Risque'
+autosize: true
+
+
+Introduction
+========================================================
+
+<small>This application is supposed to predict child's hight.</small>
+
+ 
+- Application Design
+
+
+Slide With Code
+========================================================
+
+```{r}
+summary(cars)
+```
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+
+```
+
+
+Installation and instruction how to use
+========================================================
+<small>The application is accesable online on [Server: RStudio's Shinyapp]   ()
+
+The application is available also over github [Please use following link:] ()
+
+#### Following Files are to be downloaded
+```
+1. server.R
+2. ui.R
+3. foreign.csv
+```
+
+#### How to run the App
+
+1. Create new directory 
+2. Store above files in the newely created directory
+3. Open them in the R IDE by entering following lines on your R console
+
+```
+1. library(shiny)
+2. runApp()
+```
+</small>
+
+
+
+
+
