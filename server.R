@@ -1,88 +1,70 @@
-
 library(shiny)
-data(GaltonFamilies)
-library(ggplot2)
-library(dplyr)
 library(HistData)
+data(GaltonFamilies)
+library(dplyr)
+library(ggplot2)
 
-###data is to be converted in centimeters
+# data is to be converted in centimeters
 data_gf <- GaltonFamilies
-data_gf <- data_gf %>% mutate(father=father*2.54,
-                    mother=mother*2.54,
-                    childHeight=childHeight*2.54)
+data_gf <- data_gf %>%  mutate(childHeight=childHeight*2.54,
+                                         father=father*2.54,
+                                         mother=mother*2.54
+)
 
-###linear model
+# linear model
 regmodel <- lm(childHeight ~ father + mother + gender, data=data_gf)
 
 shinyServer(function(input, output) {
-        output$parentsText <- renderText({
+        output$Txt_Parents <- renderText({
                 paste("When the father's height is",
-                      strong(round(input$inFh, 1)),
+                      strong(round(input$forFather, 1)),
                       "cm, and mother's is",
-                      strong(round(input$inMh, 1)),
+                      strong(round(input$forMother, 1)),
                       "cm, then:")
         })
-        output$prediction <- renderText({
-                df <- data.frame(
-                        mother=input$inMh,
-                        father=input$inFh,
-                                 
-                                 gender=factor(input$inGen, levels=levels(data_gf$gender)))
-                ch <- predict(regmodel, newdata=df)
-                sord <- ifelse(
-                        input$inGen=="female",
+        output$Prediction <- renderText({
+                data_frame <- data.frame(father=input$forFather,
+                                         mother=input$forMother,
+                                         gender=factor(input$forGender, levels=levels(data_gf$gender)))
+                lm <- predict(regmodel, newdata=data_frame)
+                sorting <- ifelse(
+                        input$forGender=="female",
                         "Daugther",
                         "Son"
                 )
-                paste0(em(strong(sord)),
-                       "'s approx. predicted height ",
-                       em(strong(round(ch))),
+                paste0(em(strong(sorting)),
+                       "'s s approx. predicted height",
+                       em(strong(round(lm))),
                        " cm"
                 )
         })
         output$barsPlot <- renderPlot({
                 sorting <- ifelse(
-                        input$inGen=="male",
-                        "Son",
-                        "Daugther"
+                        input$forGender=="female",
+                        "Daugther",
+                        "Son"
                 )
-                data1 <- data.frame(father=input$inFh,
-                                 mother=input$inMh,
-                                 gender=factor(input$inGen, levels=levels(data_gf$gender)))
-                ch <- predict(regmodel, newdata=data1)
+                data_frame <- data.frame(father=input$forFather,
+                                         mother=input$forMother,
+                                         gender=factor(input$forGender, levels=levels(data_gf$gender)))
+                lm <- predict(regmodel, newdata=data_frame)
                 yvals <- c("Father", sorting, "Mother")
-                data1 <- data.frame(
+                data_frame <- data.frame(
                         x = factor(yvals, levels = yvals, ordered = TRUE),
-                        y = c(input$inFh, ch, input$inMh),
-                        colors = c("darkblue", "red", "green")
+                        y = c(input$forFather, lm, input$forMother),
+                        colors = c("red", "green", "darkblue")
                 )
-                ggplot(data1, aes(x=x, y=y, color=colors, fill=colors)) +
-                        geom_bar(stat="identity", width=0.9) +
-                        xlab("Family") +
-                        ylab("Height in cm") +
+                ggplot(data_frame, aes(x=x, y=y, color=colors, fill=colors)) +
+                        geom_bar(stat="identity", width=0.8) +
+                        xlab("") +
+                        ylab("Height (cm)") +
                         theme_minimal() +
                         theme(legend.position="none")
+                
         })
-        
-        
-        
-        
-        # Generate an HTML table view of the data
-        output$table <- renderDataTable({
-                data_gf[,]
-        })
-        
-        
-        output$sum <-renderPrint({
-                summary(data_gf)
-        })
-        
-        output$str<-renderPrint({
-                str(data_gf)
-        })
-        
-        
-        
-        
+      
+        output$table <-renderDataTable({data_gf})
+        output$str <-renderPrint({str(data_gf)})
+        output$sum <-renderPrint({summary(data_gf)})
         
 })
