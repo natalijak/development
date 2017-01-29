@@ -1,53 +1,59 @@
-Developing Data Products  Presentation
+
+
+Developing Data Products Presentation of the App
 ========================================================
-author: Agape
-date: 28.01.2017
-font-family: 'Risque'
-autosize: true
+
+#### Prediction of the Childern's hight
+
+[View the application](https://agape.shinyapps.io/development/) 
+
+
+Author: Agape
+
+
+Date: 28.01.2017
 
 
 Introduction
 ========================================================
 
-<small>This application is supposed to predict child's hight.</small>
+<small>This application is supposed to predict child's hight based on the Galtons Families dataset. 
+       </small>
 
  
 - Application Design
 
+By selecting the widget "Select Input" one can choose between the child's gender.
 
-Slide With Code
-========================================================
+The data slider serves for selecting the hight of the Parents. 
+The slider is defined to the unit 0.1 for the purpose of exact selection of the hight.
 
-```{r}
-summary(cars)
-```
+The chart is updated once the selection is made based on the predicted childs hight.
 
-Slide With Plot
-========================================================
+At the disposal are three tab sets displaying the RawData, the Structure and the Summary.
 
-```{r, echo=FALSE}
-
-```
 
 
 Installation and instruction how to use
 ========================================================
-<small>The application is accesable online on [Server: RStudio's Shinyapp]   ()
+<small>The application is accesable online on [Server: RStudio's Shinyapp](https://agape.shinyapps.io/development/)
 
-The application is available also over github [Please use following link:] ()
+The application is available also over github [Please use following link](https://github.com/natalijak/development).
 
 #### Following Files are to be downloaded
 ```
 1. server.R
 2. ui.R
-3. foreign.csv
+3. library(HistData)
+4. data(GaltonFamilies)
 ```
 
 #### How to run the App
-
-1. Create new directory 
-2. Store above files in the newely created directory
-3. Open them in the R IDE by entering following lines on your R console
+```
+Create new directory 
+Store above files in the newely created directory
+Open them in the R IDE by entering following lines on your R console
+```
 
 ```
 1. library(shiny)
@@ -58,4 +64,49 @@ The application is available also over github [Please use following link:] ()
 
 
 
+
+Slide With the Image
+========================================================
+
+
+
+```{r}
+
+![app image](rPresentation-figure/api.JPG)
+
+
+```
+
+
+
+
+Slide With the Code 
+========================================================
+<small>
+```{r}
+  output$barsPlot <- renderPlot({
+                sorting <- ifelse(
+                        input$forGender=="female",
+                        "Daugther",
+                        "Son"
+                )
+                data_frame <- data.frame(father=input$forFather,
+                                         mother=input$forMother,
+                                         gender=factor(input$forGender, levels=levels(data_gf$gender)))
+                lm <- predict(regmodel, newdata=data_frame)
+                yvals <- c("Father", sorting, "Mother")
+                data_frame <- data.frame(
+                        x = factor(yvals, levels = yvals, ordered = TRUE),
+                        y = c(input$forFather, lm, input$forMother),
+                        colors = c("red", "green", "darkblue")
+                )
+                ggplot(data_frame, aes(x=x, y=y, color=colors, fill=colors)) +
+                        geom_bar(stat="identity", width=0.8) +
+                        xlab("") +
+                        ylab("Height (cm)") +
+                        theme_minimal() +
+                        theme(legend.position="none")
+
+```
+</small>
 
