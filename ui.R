@@ -29,7 +29,19 @@ shinyUI(fluidPage(
                        
                         plotOutput("barsPlot", width = "100%"),
                         htmlOutput("parentsText"),
-                        htmlOutput("prediction")
+                        htmlOutput("prediction"),
+                        
+                        
+                        # Show the plot 
+                        
+                                tabsetPanel(
+                                        tabPanel("Plot", showOutput("plot", "highcharts")),
+                                        tabPanel("Summary", verbatimTextOutput("sum")),
+                                        tabPanel("Structure", verbatimTextOutput("str")),
+                                        tabPanel("Raw Data", dataTableOutput("table"))
+                        
+                        
+                                )
                 )
         )
 ))

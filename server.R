@@ -57,10 +57,32 @@ shinyServer(function(input, output) {
                         colors = c("darkblue", "red", "green")
                 )
                 ggplot(data1, aes(x=x, y=y, color=colors, fill=colors)) +
-                        geom_bar(stat="identity", width=0.5) +
-                        xlab("") +
+                        geom_bar(stat="identity", width=0.9) +
+                        xlab("Family") +
                         ylab("Height in cm") +
                         theme_minimal() +
                         theme(legend.position="none")
         })
+        
+        
+        
+        
+        # Generate an HTML table view of the data
+        output$table <- renderDataTable({
+                data_gf[,]
+        })
+        
+        
+        output$sum <-renderPrint({
+                summary(data_gf)
+        })
+        
+        output$str<-renderPrint({
+                str(data_gf)
+        })
+        
+        
+        
+        
+        
 })
